@@ -1,0 +1,52 @@
+Sub CreateEvents()
+
+    Dim OL As Outlook.Application, Appoint As Outlook.AppointmentItem, ES As Worksheet, _
+    r As Long, i As Long, WB As ThisWorkbook
+
+    Set WB = ThisWorkbook
+    Set ES = WB.Sheets("Appointments")
+    r = ES.Cells(Rows.Count, 1).End(xlUp).Row
+    Set OL = New Outlook.Application
+    
+    
+    Application.ScreenUpdating = False
+    
+    On Error GoTo ERRORMSG
+    
+    For i = 2 To r
+        Set Appoint = OL.CreateItem(olAppointmentItem)
+        With Appoint
+            'Set subject name in Column A
+            .Subject = ES.Cells(i, 1).Value
+            
+            'Set appointment start date in Column B
+            .Start = ES.Cells(i, 2).Value
+            
+            'Set appointment end date in Column C
+            .End = ES.Cells(i, 3).Value
+            
+            'Set appointment category in Column D
+            .Categories = ES.Cells(i, 4).Value
+
+            'Always set as "Out of office"
+            .BusyStatus = olOutOfOffice
+            
+            'Always set as all day event
+            .AllDayEvent = True
+            
+            .Save
+        End With
+    Next i
+    Set OL = Nothing
+    
+    MsgBox r - 1 & " event(s) created! Check your Outlook calendar."
+    Application.ScreenUpdating = True
+    Exit Sub
+    
+ERRORMSG:
+    MsgBox "Error detected, please check your entries!"
+    Application.ScreenUpdating = True
+    
+    
+End Sub
+
